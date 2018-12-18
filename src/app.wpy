@@ -21,8 +21,15 @@ setStore(store)
 
 export default class extends wepy.app {
   config = {
+    usingComponents: {
+      "van-toast": "./components/vant/toast/index",
+      "van-loading": "./components/vant/loading/index",
+      "van-cell": "./components/vant/cell/index",
+      "van-cell-group": "./components/vant/cell-group/index"
+    },
     pages: [
-      'pages/index'
+      'pages/index',
+      "pages/result",
     ],
     window: {
       backgroundTextStyle: 'light',

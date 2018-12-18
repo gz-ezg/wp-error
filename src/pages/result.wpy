@@ -1,0 +1,197 @@
+<style>
+.table-container{
+  background-color: white;
+  padding: 10rpx;
+}
+.table{
+  font-size: 24rpx;
+  border:1px solid #dadada;
+  border-right: 0;
+  border-bottom: 0;
+  /* border-left: 0; */
+  width: 98%;
+}
+.tr {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.th,.td {
+  padding: 10rpx;
+  border-bottom: 1px solid #dadada;
+  border-right: 1px solid #dadada;
+  text-align: center;
+  width:100%
+}
+.td1{
+  width:50%
+}
+/* .td1{
+  width:20%
+}
+.td3{
+  width:40%
+}
+.td4{
+  width:40%
+} */
+.th {
+  font-weight: 400;
+  background-color: #dadada;
+  font-size: 30rpx;
+}
+</style>
+
+<template>
+  <view>
+    <view><text style="font-size:36rpx;display:flex;justify-content:center;margin-top:14rpx" >税务信息</text></view>
+    <view class="table-container">
+      <!-- <view style="font-size:24rpx;text-indent:2em;padding-bottom:24rpx;">应纳税所得额=（月收入-五险一金-起征点-依法确定的其他扣除-专项附加扣除）x 适用税率 - 速算扣除数</view>
+      <view style="text-align:center;font-size:36rpx;padding-bottom:16rpx">个人所得税税率表</view> -->
+      <view class="table">
+          <view class="tr" >
+              <view class="th td1">税所</view>
+              <view class="th td2">税种</view>
+              <view class="th td3">所属期始</view>
+              <view class="th td4">所属期止</view>
+          </view>
+          <view style="margin-top:40rpx" wx:if="{{taxLoading}}">
+            <van-loading style="margin:45%" />
+            <view style="display:flex;justify-content:center;margin-top:14rpx">正在查询中...</view>
+          </view>
+          <view wx:else="{{taxLoading}}">
+            <view wx:if="{{taxError.length}}">
+              <view wx:for="{{taxError}}" class="tr" wx:key="unique" >
+                <view class="td td1">{{item.gdslx}}</view>
+                <view class="td td2">{{item.zsxmmc}}</view>
+                <view class="td td3">{{item.skssqq}}</view>
+                <view class="td td4">{{item.skssqz}}</view>
+              </view>
+            </view>
+            <view wx:else="{{taxError.length}}" style="display:flex;justify-content:center;margin-top:14rpx">暂无异常</view>
+          </view>
+      </view>
+    </view>
+    <van-cell-group>
+      <van-cell
+        title="列入经营异常名录原因"
+        label="描述信息"
+      />
+      <van-cell
+        title="决定机关"
+        value="内容"
+      />
+      <van-cell
+        title="列入日期"
+        value="列入日期"
+      />
+    </van-cell-group>
+    <van-toast id="van-toast" />
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import Toast from '../components/vant/toast/toast';
+import { GET,POST } from '../utils/my_request.js'
+
+export default class Index extends wepy.page {
+  data = {
+    companyName: "",
+    taxError: [],
+    taxLoading: true
+  }
+  methods = {
+
+  }
+  get_tax_error(e){
+    let _self = this
+    let url = `customer/company/exception/etax`
+    let config = {}
+    config.companyName = e
+    // console.log(config)
+    function success(res){
+
+      _self.taxError = JSON.parse(res.data.data.replace(/<[^>]+>/g,"")).data.taxML.body.taxML.sbqkList.sbqk
+      _self.taxLoading = false
+      _self.$apply()
+      Toast.clear()
+      // console.log(JSON.parse(res.data.data.replace(/<[^>]+>/g,"")).data.taxML.body.taxML.sbqkList.sbqk)
+    }
+
+    function fail(err){
+      Toast.clear()
+      Toast.fail("查询失败，请稍后重试！")
+      // setTimeout(() => {
+      //   wx.navigateBack("1")
+      // }, 1500);
+    }
+
+    function complete(){
+      _self.taxLoading = false
+      _self.$apply()
+    }
+
+    let header = {
+      'content-type' : 'application/x-www-form-urlencoded'
+    }
+
+    POST(url, config, success, fail, complete, header)
+  }
+
+  get_bussiness(e){
+    let _self = this
+    let url = `customer/company/exception/business`
+    let config = {}
+    config.companyName = e
+    // console.log(config)
+    function success(res){
+      // Toast.clear()
+      // console.log(JSON.parse(res.data.data.replace(/<[^>]+>/g,"")).data.abnormalList)
+      // _self.taxError = res.data.data.replace(/<[^>]+>/g,"").data.abnormalList
+      // _self.$apply()
+    }
+    function fail(err){
+      Toast.clear()
+      Toast.fail("查询失败，请稍后重试！")
+      // setTimeout(() => {
+      //   wx.navigateBack("1")
+      // }, 1500);
+    }
+
+    function complete(){
+      console.log("123")
+    }
+
+    let header = {
+      'content-type' : 'application/x-www-form-urlencoded'
+    }
+
+    POST(url, config, success,fail, complete, header)
+  }
+  onReady(){
+    let _self = this
+    this.invoiceInfo = {}
+    // Toast.loading({
+    //   mask: true,
+    //   message: '加载中...',
+    //   duration: 0,
+    //   forbidClick: true
+    // });
+    wx.getStorage({
+      key: "companyName",
+      success: function (res){
+        _self.companyName = res.data
+        //  税务异常
+        _self.get_tax_error(res.data)
+        //  工商异常
+        _self.get_bussiness(res.data)
+      },
+      fail: function (err){
+        // Toast.clear()
+        wx.navigateBack("1")
+      }
+    })
+  }
+}
+</script>

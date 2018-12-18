@@ -1,3 +1,4 @@
+import Toast from '../components/vant/toast/toast';
 function fail(err){
   console.log(err)
 }
@@ -14,7 +15,8 @@ let header = {
 let encCode
 
 let proUrl = "https://cloud.zgcfo.com/api/"
-let devUrl = "http://cloud.yrl.fun/api/"
+// let devUrl = "http://cloud.yrl.fun/api/"
+let devUrl = "http://192.168.0.224:9000/"
 
 //  处理未登录事件
 function un_login(){
@@ -26,7 +28,7 @@ function un_login(){
   wx.login({
       success (res) {
           if (res.code) {
-              console.log(res.code)
+              // console.log(res.code)
               //发起网络请求
               wx.request({
                   url: 'http://cloud.yrl.fun/api/user/weChatApplet/getWXEncKey',
@@ -59,13 +61,13 @@ export function GET(url, data, success, fail=fail, complete=complete, header=hea
   //  混入校验值
   let config
   if(!encCode){
-    console.log("123")
+    // console.log("123")
     wx.getStorage({
       key: "encCode",
       success: function(res){
         encCode = res.data
         config = Object.assign({encKey: res.data}, data)
-        console.log(config)
+        // console.log(config)
         myGet()
       },
       fail:function (err){
@@ -75,7 +77,7 @@ export function GET(url, data, success, fail=fail, complete=complete, header=hea
   }else{
     config = Object.assign({encKey: encCode}, data)
     myGet()
-    console.log(config)
+    // console.log(config)
   }
 
   function successObj(res){
@@ -118,11 +120,11 @@ export function POST(url, data, success, fail=fail, complete=complete, header=he
     wx.getStorage({
       key: "encCode",
       success: function (res){
-        console.log(res)
+        // console.log(res)
         encCode = res.data
-        console.log(res.data)
+        // console.log(res.data)
         config = Object.assign({encKey: res.data}, data)
-        console.log(config)
+        // console.log(config)
         myPost()
       },
       fail:function (err){
