@@ -40,14 +40,25 @@
   background-color: #dadada;
   font-size: 30rpx;
 }
+.go-back {
+    margin: auto;
+    margin-top: 30rpx;
+    width: 90%;
+    background: #ffffff;
+    color: #636363;
+    box-shadow: 0px 6px 15px 0px rgba(255,121,84,0.1);
+    font-size: 32rpx;
+    height: 98rpx;
+    line-height: 98rpx;
+    text-align: center;
+    margin-bottom: 30rpx;
+}
 </style>
 
 <template>
-  <view>
-    <view><text style="font-size:36rpx;display:flex;justify-content:center;margin-top:14rpx" >税务信息</text></view>
+  <view style="width:95%;margin:auto">
+    <view><text style="font-size:36rpx;display:flex;justify-content:center;margin-top:14rpx;padding-bottom:20rpx">税务异常信息</text></view>
     <view class="table-container">
-      <!-- <view style="font-size:24rpx;text-indent:2em;padding-bottom:24rpx;">应纳税所得额=（月收入-五险一金-起征点-依法确定的其他扣除-专项附加扣除）x 适用税率 - 速算扣除数</view>
-      <view style="text-align:center;font-size:36rpx;padding-bottom:16rpx">个人所得税税率表</view> -->
       <view class="table">
           <view class="tr" >
               <view class="th td1">税所</view>
@@ -57,36 +68,53 @@
           </view>
           <view style="margin-top:40rpx" wx:if="{{taxLoading}}">
             <van-loading style="margin:45%" />
-            <view style="display:flex;justify-content:center;margin-top:14rpx">正在查询中...</view>
+            <view style="display:flex;justify-content:center;margin-top:14rpx;font-size: 24rpx;">正在查询中...</view>
           </view>
           <view wx:else="{{taxLoading}}">
-            <view wx:if="{{taxError.length}}">
-              <view wx:for="{{taxError}}" class="tr" wx:key="unique" >
+            <view>
+              <view wx:for="{{taxErrorShow}}" class="tr" wx:key="unique" >
                 <view class="td td1">{{item.gdslx}}</view>
                 <view class="td td2">{{item.zsxmmc}}</view>
                 <view class="td td3">{{item.skssqq}}</view>
                 <view class="td td4">{{item.skssqz}}</view>
               </view>
             </view>
-            <view wx:else="{{taxError.length}}" style="display:flex;justify-content:center;margin-top:14rpx">暂无异常</view>
+            <view wx:if="{{taxError.length > 5 && !taxLoading && (taxErrorShow.length == taxErrorFirst.length)}}" style="display:flex;justify-content:center;padding:16rpx" @tap="open_tax_more">点击查看更多</view>
+            <view wx:if="{{taxError.length > 5 && !taxLoading && (taxErrorShow.length == taxError.length)}}" style="display:flex;justify-content:center;padding:16rpx" @tap="close_tax_more">点击关闭</view>
+            <view wx:if="{{taxError.length == 0 && !taxLoading}}" style="display:flex;justify-content:center;margin-top:14rpx">暂无异常</view>
           </view>
       </view>
     </view>
-    <van-cell-group>
-      <van-cell
-        title="列入经营异常名录原因"
-        label="描述信息"
-      />
-      <van-cell
-        title="决定机关"
-        value="内容"
-      />
-      <van-cell
-        title="列入日期"
-        value="列入日期"
-      />
+    <view><text style="font-size:36rpx;display:flex;justify-content:center;margin-top:14rpx;padding-bottom:20rpx">工商异常信息</text></view>
+    <view style="margin-top:40rpx" wx:if="{{businessLoading}}">
+      <van-loading style="margin:45%" />
+      <view style="display:flex;justify-content:center;margin-top:14rpx;font-size: 24rpx;">正在查询中...</view>
+    </view>
+    <van-cell-group wx:else>
+      <view wx:for="{{bussinessShow}}" wx:key="unique">
+        <van-cell
+          title="列入经营异常名录原因"
+          label="{{item.abnormal_cause}}"
+        />
+        <van-cell
+          title="决定机关"
+          value="{{item.office}}"
+        />
+        <van-cell
+          title="列入日期"
+          value="{{item.abnormal_date}}"
+        />
+        <van-cell
+          title="移出日期"
+          value="{{item.remove_date}}"
+        />
+      </view>
     </van-cell-group>
+    <view wx:if="{{businessError.length > 1 && !businessLoading && (bussinessShow.length == bussinessFirst.length)}}" style="display:flex;justify-content:center;padding:16rpx;font-size: 24rpx;" @tap="open_bussiness_more">点击查看更多</view>
+    <view wx:if="{{businessError.length > 1 && !businessLoading && (bussinessShow.length == businessError.length)}}" style="display:flex;justify-content:center;padding:16rpx;font-size: 24rpx;" @tap="close_bussiness_more">点击关闭</view>
+    <view wx:if="{{businessError.length == 0 && !businessLoading}}" style="display:flex;justify-content:center;margin-top:14rpx;font-size: 24rpx;padding-top:24rpx;padding-bottom:24rpx">暂无异常</view>
     <van-toast id="van-toast" />
+    <button @tap="back" class="go-back">返回</button>
   </view>
 </template>
 
@@ -96,27 +124,53 @@ import Toast from '../components/vant/toast/toast';
 import { GET,POST } from '../utils/my_request.js'
 
 export default class Index extends wepy.page {
+  config = {
+      backgroundTextStyle: 'light',
+      navigationBarBackgroundColor: '#CC3300',
+      navigationBarTitleText: '企业异常检测',
+      navigationBarTextStyle: '#ffffff'
+    }
   data = {
     companyName: "",
     taxError: [],
-    taxLoading: true
+    taxLoading: true,
+    businessError: [],
+    businessLoading: true,
+    taxErrorFirst: [],
+    taxErrorShow: [],
+    bussinessShow: [],
+    bussinessFirst: []
   }
   methods = {
-
+    back(){
+      wx.removeStorageSync('companyName')
+      wx.navigateBack("1")
+    },
+    open_tax_more(){
+      this.taxErrorShow = this.taxError
+    },
+    close_tax_more(){
+      this.taxErrorShow = this.taxErrorFirst
+    },
+    open_bussiness_more(){
+      this.bussinessShow = this.businessError
+    },
+    close_bussiness_more(){
+      this.bussinessShow = this.bussinessFirst
+    }
   }
   get_tax_error(e){
     let _self = this
     let url = `customer/company/exception/etax`
     let config = {}
     config.companyName = e
-    // console.log(config)
     function success(res){
-
       _self.taxError = JSON.parse(res.data.data.replace(/<[^>]+>/g,"")).data.taxML.body.taxML.sbqkList.sbqk
+      _self.taxErrorFirst = _self.taxError.slice(0,5)
+      _self.taxErrorShow = _self.taxErrorFirst
+
       _self.taxLoading = false
       _self.$apply()
-      Toast.clear()
-      // console.log(JSON.parse(res.data.data.replace(/<[^>]+>/g,"")).data.taxML.body.taxML.sbqkList.sbqk)
     }
 
     function fail(err){
@@ -144,14 +198,32 @@ export default class Index extends wepy.page {
     let url = `customer/company/exception/business`
     let config = {}
     config.companyName = e
-    // console.log(config)
+
     function success(res){
-      // Toast.clear()
-      // console.log(JSON.parse(res.data.data.replace(/<[^>]+>/g,"")).data.abnormalList)
-      // _self.taxError = res.data.data.replace(/<[^>]+>/g,"").data.abnormalList
-      // _self.$apply()
+
+      function formatDate(e){
+        let tempDate = new Date(e)
+        // console.log(tempDate)
+        // console.log(tempDate.getFullYear())
+        // console.log(tempDate.getMonth())
+        // console.log(tempDate.getDate())
+        return `${tempDate.getFullYear()} 年 ${tempDate.getMonth() + 1} 月 ${tempDate.getDate()} 日`
+      }
+      _self.businessError = JSON.parse(res.data.data.replace(/<[^>]+>/g,"")).data.abnormalList
+      // console.log(_self.businessError)
+      for(let i = 0; i<_self.businessError.length;i++){
+        _self.businessError[i].abnormal_date = formatDate(_self.businessError[i].abnormal_date)
+        if(_self.businessError[i].remove_date){
+          _self.businessError[i].remove_date = formatDate(_self.businessError[i].remove_date)
+        }
+      }
+      _self.bussinessFirst = _self.businessError.slice(0,1)
+      _self.bussinessShow = _self.bussinessFirst
+      _self.businessLoading = false
+      _self.$apply()
     }
     function fail(err){
+      _self.businessLoading = false
       Toast.clear()
       Toast.fail("查询失败，请稍后重试！")
       // setTimeout(() => {
@@ -160,7 +232,7 @@ export default class Index extends wepy.page {
     }
 
     function complete(){
-      console.log("123")
+      _self.businessLoading = false
     }
 
     let header = {

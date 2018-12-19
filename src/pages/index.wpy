@@ -75,29 +75,44 @@
     line-height: 49px;
     text-align: center;
 }
+.bg-box{
+    position: relative;
+    width : 100%;
+    height : 100%;
+    /* box-sizing: border-box; */
+    background-color: #faeeef;
+}
+/* .last-button{
+  margin-bottom:0rpx!important;
+} */
 </style>
 <template>
-  <view class="section form" >
+  <view class="content">
+    <view class="bg-box">
+      <image class="scan-img" src="./error.png" mode="scaleToFill" style="width:100%;height:1350rpx"></image>
+    </view>
+    <view class="section form" style="position:absolute;top:620rpx;left:5%">
         <form @submit="formSubmit" @reset="formReset">
             <view class="form-input" style="padding-top:36rpx">
                 <view class="item">
                     <label>企业名称</label>
-                    <input name="companyName" placeholder="请填写查询的企业名称" placeholderClass="item-ph" type="text" value="{{companyName}}"></input>
+                    <input name="companyName" placeholder="请填写查询的企业名称" placeholderClass="item-ph" type="text" value="{{companyName}}" @input="changeCompany"></input>
                 </view>
                 <view class="item">
                     <label>联系人</label>
-                    <input name="name" placeholder="请填写企业联系人" placeholderClass="item-ph" type="text" value="{{name}}"></input>
+                    <input name="name" placeholder="请填写企业联系人" placeholderClass="item-ph" type="text" value="{{name}}" @input="changeName"></input>
                 </view>
             </view>
             <view>
                 <!-- <button class="go-look" formType="submit">查询</button> -->
-                <button wx:if="{{tel}}" formType="submit" class="go-look">查询</button>
-                <button open-type="getPhoneNumber" @getphonenumber="getPhoneNumber" wx:else class="go-look">查询</button>
-                <button formType="reset">清空</button>
+                <button wx:if="{{tel}}" formType="submit" class="go-look" disabled="{{disabled}}">查询</button>
+                <button open-type="getPhoneNumber" @getphonenumber="getPhoneNumber" wx:else class="go-look" disabled="{{disabled}}">查询</button>
+                <button formType="reset" class="last-button">清空</button>
             </view>
         </form>
         <van-toast id="van-toast" />
     </view>
+  </view>
 </template>
 
 <script>
@@ -142,77 +157,35 @@
       // toast: Toast
     }
 
+    computed = {
+      disabled () {
+        if(this.companyName && this.name){
+          return false
+        }else{
+          return true
+        }
+      }
+    }
+
     // mixins = [testMixin]
 
     data = {
       companyName: "",
       name: "",
       tel: "",
-      // tel: "",
-      // mynum: 20,
-      // userInfo: {
-      //   nickName: '加载中...'
-      // },
-      // normalTitle: '原始标题',
-      // setTimeoutTitle: '标题三秒后会被修改',
-      // count: 0,
-      // netrst: '',
-      // groupList: [
-      //   {
-      //     id: 1,
-      //     name: '点击改变',
-      //     list: [
-      //       {
-      //         childid: '1.1',
-      //         childname: '子项，点我改变'
-      //       }, {
-      //         childid: '1.2',
-      //         childname: '子项，点我改变'
-      //       }, {
-      //         childid: '1.3',
-      //         childname: '子项，点我改变'
-      //       }
-      //     ]
-      //   },
-      //   {
-      //     id: 2,
-      //     name: '点击改变',
-      //     list: [
-      //       {
-      //         childid: '2.1',
-      //         childname: '子项，点我改变'
-      //       }, {
-      //         childid: '2.2',
-      //         childname: '子项，点我改变'
-      //       }, {
-      //         childid: '2.3',
-      //         childname: '子项，点我改变'
-      //       }
-      //     ]
-      //   },
-      //   {
-      //     id: 3,
-      //     name: '点击改变',
-      //     list: [
-      //       {
-      //         childid: '3.1',
-      //         childname: '子项，点我改变'
-      //       }
-      //     ]
-      //   }
-      // ]
     }
-
-    // computed = {
-    //   now () {
-    //     return +new Date()
-    //   }
-    // }
-
     methods = {
       formReset(e){
         this.companyName = ""
         this.name = ""
+        this.$apply()
+      },
+      changeCompany(e){
+        this.companyName = e.detail.value
+        this.$apply()
+      },
+      changeName(e){
+        this.name = e.detail.value
         this.$apply()
       },
       formSubmit(e){
@@ -247,7 +220,9 @@
           let url = `user/weChatApplet/decodePhone`
           let config = {
             encryptedData: e.detail.encryptedData,
-            iv: e.detail.iv
+            iv: e.detail.iv,
+            name: _self.name,
+            enterprise: _self.companyName
           }
 
           function success(res){
@@ -264,7 +239,12 @@
               }
             })
           }
-          GET(url, config, success)
+
+          function fail(err){
+
+          }
+
+          GET(url, config, success, fail)
         }else{
           Toast.fail("对不起，授权失败！")
         }
