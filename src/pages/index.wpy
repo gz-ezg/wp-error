@@ -57,7 +57,7 @@
 }
 
 .form .go-look {
-    background: #CC3300;
+    background: #e1474c;
     color: #ffffff;
     /* box-shadow: 5px 6px 29px 5px rgba(254,124,89,0.53); */
     font-size: 32rpx;
@@ -144,7 +144,7 @@
   export default class Index extends wepy.page {
     config = {
       backgroundTextStyle: 'light',
-      navigationBarBackgroundColor: '#CC3300',
+      navigationBarBackgroundColor: '#cf1e1e',
       navigationBarTitleText: '企业异常检测',
       navigationBarTextStyle: '#ffffff'
     }
@@ -233,6 +233,18 @@
               data: JSON.parse(res.data.data).phoneNumber,
               success: function(res){
                 console.log(res)
+                wx.setStorage({
+                  key: "companyName",
+                  data: _self.companyName,
+                  success: function(res){
+                    wx.navigateTo({
+                      url: "/pages/result"
+                    })
+                  },
+                  fail: function(e){
+                    Toast.fail("查询失败，请再来一次！")
+                  }
+                })
               },
               complete: function(e){
                 console.log("finish")

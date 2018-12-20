@@ -15,8 +15,8 @@ let header = {
 let encCode
 
 let proUrl = "https://cloud.zgcfo.com/api/"
-let devUrl = "http://cloud.yrl.fun/api/"
-// let devUrl = "http://192.168.0.224:9000/"
+// let devUrl = "http://cloud.yrl.fun/api/"
+let devUrl = "http://192.168.0.222:9000/"
 
 //  处理未登录事件
 function un_login(){
