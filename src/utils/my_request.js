@@ -14,8 +14,8 @@ let header = {
 
 let encCode
 
-let proUrl = "https://cloud.zgcfo.com/api/"
-let devUrl = "http://cloud.yrl.fun/api/"
+let devUrl = "https://cloud.zgcfo.com/api/"
+// let devUrl = "http://cloud.yrl.fun/api/"
 // let devUrl = "http://192.168.0.222:9000/"
 
 //  处理未登录事件
@@ -31,9 +31,9 @@ function un_login(){
               // console.log(res.code)
               //发起网络请求
               wx.request({
-                  url: 'http://cloud.yrl.fun/api/user/weChatApplet/getWXEncKey',
+                  // url: 'http://cloud.yrl.fun/api/user/weChatApplet/getWXEncKey',
                   // url:'http://192.168.0.222:9000/user/weChatApplet/getWXEncKey',
-                  // url: 'https://cloud.zgcfo.com/api/user/weChatApplet/getWXEncKey',
+                  url: 'https://cloud.zgcfo.com/api/user/weChatApplet/getWXEncKey',
                   data: {
                       code: res.code,
                       typeFlag: "exception"

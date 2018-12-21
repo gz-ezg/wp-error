@@ -1,6 +1,7 @@
 <style>
 page{
-  height:100%
+  height:100%;
+  /* background-color: #e1474c; */
 }
 .table-container{
   background-color: white;
@@ -85,9 +86,9 @@ page{
             </view>
             <view wx:if="{{taxError.length > 5 && !taxLoading && (taxErrorShow.length == taxErrorFirst.length)}}" style="display:flex;justify-content:center;padding:16rpx" @tap="open_tax_more">点击查看更多</view>
             <view wx:if="{{taxError.length > 5 && !taxLoading && (taxErrorShow.length == taxError.length)}}" style="display:flex;justify-content:center;padding:16rpx" @tap="close_tax_more">点击关闭</view>
-            <view wx:if="{{taxError.length == 0 && !taxLoading}}" style="display:flex;justify-content:center;margin-top:14rpx">暂无异常</view>
           </view>
       </view>
+      <view wx:if="{{taxError.length == 0 && !taxLoading}}" style="display:flex;justify-content:center;margin-top:14rpx;font-size:28rpx">暂无异常</view>
     </view>
     <view><text style="font-size:36rpx;display:flex;justify-content:center;margin-top:14rpx;padding-bottom:20rpx">工商异常信息</text></view>
     <view style="margin-top:40rpx" wx:if="{{businessLoading}}">
@@ -116,9 +117,9 @@ page{
     </van-cell-group>
     <view wx:if="{{businessError.length > 1 && !businessLoading && (bussinessShow.length == bussinessFirst.length)}}" style="display:flex;justify-content:center;padding:16rpx;font-size: 24rpx;" @tap="open_bussiness_more">点击查看更多</view>
     <view wx:if="{{businessError.length > 1 && !businessLoading && (bussinessShow.length == businessError.length)}}" style="display:flex;justify-content:center;padding:16rpx;font-size: 24rpx;" @tap="close_bussiness_more">点击关闭</view>
-    <view wx:if="{{businessError.length == 0 && !businessLoading}}" style="display:flex;justify-content:center;margin-top:14rpx;font-size: 24rpx;padding-top:24rpx;padding-bottom:24rpx">暂无异常</view>
+    <view wx:if="{{businessError.length == 0 && !businessLoading}}" style="display:flex;justify-content:center;margin-top:14rpx;padding-top:24rpx;padding-bottom:24rpx;font-size:28rpx">暂无异常</view>
     <van-toast id="van-toast" />
-    <view style="width:90%">* <text style="color:red;font-size:14px">以上结果仅供参考</text>，最终结果以税务局及工商局公示为准！</view>
+    <view style="width:90%;font-size:28rpx;margin:auto;padding-top:40rpx">* <text style="color:red;font-size:28rpx">以上结果仅供参考</text>，最终结果以税务局及工商局公示为准！</view>
     <button @tap="back" class="go-back">返回</button>
   </view>
 </template>

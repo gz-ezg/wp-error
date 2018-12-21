@@ -117,44 +117,15 @@
 
 <script>
   import wepy from 'wepy'
-  // import { connect } from 'wepy-redux'
-  // import Panel from '@/components/panel' // alias example
-  // import Counter from 'counter' // alias example
-  // import List from '../components/list' // aliasFields example
-  // import moduleA from 'module-a' // aliasFields ignore module example
-  // import Group from '../components/group'
-  // import Toast from 'wepy-com-toast'
-  // import testMixin from '../mixins/test'
   import { GET,POST } from '../utils/my_request.js'
-
-  // console.log('moduleA ignored: ', moduleA) // => moduleA ignored: {}
-
-  // @connect({
-  //   num (state) {
-  //     return state.counter.num
-  //   },
-  //   asyncNum (state) {
-  //     return state.counter.asyncNum
-  //   },
-  //   sumNum (state) {
-  //     return state.counter.num + state.counter.asyncNum
-  //   }
-  // })
   import Toast from '../components/vant/toast/toast';
+
   export default class Index extends wepy.page {
     config = {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#cf1e1e',
       navigationBarTitleText: '企业异常检测',
       navigationBarTextStyle: '#ffffff'
-    }
-    components = {
-      // panel: Panel,
-      // counter1: Counter,
-      // counter2: Counter,
-      // list: List,
-      // group: Group,
-      // toast: Toast
     }
 
     computed = {
@@ -166,8 +137,6 @@
         }
       }
     }
-
-    // mixins = [testMixin]
 
     data = {
       companyName: "",
@@ -186,7 +155,7 @@
         time1 = setTimeout(()=>{
           this.companyName = e.detail.value
           this.$apply()
-        },4)
+        },70)
       },
       changeName(e){
         let time2
@@ -194,7 +163,7 @@
         time2 = setTimeout(()=>{
           this.name = e.detail.value
           this.$apply()
-        },4)
+        },70)
       },
       formSubmit(e){
         let flag = 0
@@ -223,6 +192,7 @@
       },
       //  获取手机号码
       getPhoneNumber(e){
+        Toast.loading("正在加载中...")
         let _self = this
         if(e.detail.encryptedData){
           let url = `user/weChatApplet/decodePhone`
@@ -234,13 +204,14 @@
           }
 
           function success(res){
+            
             _self.tel = JSON.parse(res.data.data).phoneNumber
             _self.$apply()
             wx.setStorage({
               key: "tel",
               data: JSON.parse(res.data.data).phoneNumber,
               success: function(res){
-                console.log(res)
+                // console.log(res)
                 wx.setStorage({
                   key: "companyName",
                   data: _self.companyName,
@@ -269,59 +240,7 @@
           Toast.fail("对不起，授权失败！")
         }
       },
-      // get_info(){
-      //   console.log("123")
-      // },
-      // plus () {
-      //   this.mynum++
-      // },
-      // toast () {
-      //   let promise = this.$invoke('toast', 'show', {
-      //     title: '自定义标题',
-      //     img: 'https://raw.githubusercontent.com/kiinlam/wetoast/master/images/star.png'
-      //   })
-
-      //   promise.then((d) => {
-      //     console.log('toast done')
-      //   })
-      // },
-      // tap () {
-      //   console.log('do noting from ' + this.$name)
-      // },
-      // communicate () {
-      //   console.log(this.$name + ' tap')
-
-      //   this.$invoke('counter2', 'minus', 45, 6)
-      //   this.$invoke('counter1', 'plus', 45, 6)
-
-      //   this.$broadcast('index-broadcast', 1, 3, 4)
-      // },
-      // request () {
-      //   let self = this
-      //   let i = 10
-      //   let map = ['MA==', 'MQo=', 'Mg==', 'Mw==', 'NA==', 'NQ==', 'Ng==', 'Nw==', 'OA==', 'OQ==']
-      //   while (i--) {
-      //     wepy.request({
-      //       url: 'https://www.madcoder.cn/tests/sleep.php?time=1&t=css&c=' + map[i] + '&i=' + i,
-      //       success: function (d) {
-      //         self.netrst += d.data + '.'
-      //         self.$apply()
-      //       }
-      //     })
-      //   }
-      // },
-      // counterEmit (...args) {
-      //   let $event = args[args.length - 1]
-      //   console.log(`${this.$name} receive ${$event.name} from ${$event.source.$name}`)
-      // }
     }
-
-    // events = {
-    //   'index-emit': (...args) => {
-    //     let $event = args[args.length - 1]
-    //     console.log(`${this.$name} receive ${$event.name} from ${$event.source.$name}`)
-    //   }
-    // }
 
     onLoad() {
       let _self = this
@@ -335,20 +254,6 @@
           console.log("none-tel")
         }
       })
-      // this.$parent.getUserInfo(function (userInfo) {
-      //   if (userInfo) {
-      //     self.userInfo = userInfo
-      //   }
-      //   self.normalTitle = '标题已被修改'
-
-      //   self.setTimeoutTitle = '标题三秒后会被修改'
-      //   setTimeout(() => {
-      //     self.setTimeoutTitle = '到三秒了'
-      //     self.$apply()
-      //   }, 3000)
-
-      //   self.$apply()
-      // })
     }
   }
 </script>
