@@ -181,12 +181,20 @@
         this.$apply()
       },
       changeCompany(e){
-        this.companyName = e.detail.value
-        this.$apply()
+        let time1
+        clearTimeout(time1)
+        time1 = setTimeout(()=>{
+          this.companyName = e.detail.value
+          this.$apply()
+        },4)
       },
       changeName(e){
-        this.name = e.detail.value
-        this.$apply()
+        let time2
+        clearTimeout(time2)
+        time2 = setTimeout(()=>{
+          this.name = e.detail.value
+          this.$apply()
+        },4)
       },
       formSubmit(e){
         let flag = 0

@@ -84,8 +84,10 @@ export default class extends wepy.app {
           wx.request({
             // url: 'https://cloud.zgcfo.com/api/user/weChatApplet/getWXEncKey',
             url: 'http://cloud.yrl.fun/api/user/weChatApplet/getWXEncKey',
+            // url: 'http://192.168.0.222:9000/user/weChatApplet/getWXEncKey',
             data: {
-              code: res.code
+              code: res.code,
+              typeFlag: "exception"
             },
             success: function(res){
               if(res.data.msgCode == 40000){

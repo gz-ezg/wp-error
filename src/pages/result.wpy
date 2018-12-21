@@ -59,7 +59,7 @@ page{
 </style>
 
 <template>
-  <view style="width:95%;margin:auto">
+  <view style="width:95%;margin:auto;padding-bottom:30rpx;">
     <view><text style="font-size:40rpx;display:flex;justify-content:center;margin-top:14rpx;padding-bottom:20rpx">{{companyName}}</text></view>
     <view><text style="font-size:36rpx;display:flex;justify-content:center;margin-top:14rpx;padding-bottom:20rpx">税务异常信息</text></view>
     <view class="table-container">
@@ -118,6 +118,7 @@ page{
     <view wx:if="{{businessError.length > 1 && !businessLoading && (bussinessShow.length == businessError.length)}}" style="display:flex;justify-content:center;padding:16rpx;font-size: 24rpx;" @tap="close_bussiness_more">点击关闭</view>
     <view wx:if="{{businessError.length == 0 && !businessLoading}}" style="display:flex;justify-content:center;margin-top:14rpx;font-size: 24rpx;padding-top:24rpx;padding-bottom:24rpx">暂无异常</view>
     <van-toast id="van-toast" />
+    <view style="width:90%">* <text style="color:red;font-size:14px">以上结果仅供参考</text>，最终结果以税务局及工商局公示为准！</view>
     <button @tap="back" class="go-back">返回</button>
   </view>
 </template>
@@ -163,18 +164,49 @@ export default class Index extends wepy.page {
       this.bussinessShow = this.bussinessFirst
     }
   }
+  // save_tax_error(res){
+  //   let _self = this
+  //   let url = 'customer/company/searchuser/saveSearchResult'
+  //   let config = {
+  //     	enterprise: _self.companyName,
+  //       tax_error: res.data.data
+  //   }
+
+  //   function success(res){
+
+  //   }
+
+  //   function fail(err) {
+
+  //   }
+
+  //   function complete(){
+
+  //   }
+
+  //   let header = {
+  //     'content-type' : 'application/x-www-form-urlencoded'
+  //   }
+
+  //   POST(url, config, success, fail, complete, header)
+  // }
+
   get_tax_error(e){
     let _self = this
     let url = `customer/company/exception/etax`
     let config = {}
     config.companyName = e
     function success(res){
-      _self.taxError = JSON.parse(res.data.data.replace(/<[^>]+>/g,"")).data.taxML.body.taxML.sbqkList.sbqk
+      try {
+        _self.taxError = JSON.parse(res.data.data.replace(/<[^>]+>/g,"")).data.taxML.body.taxML.sbqkList.sbqk
+      } catch (error) {
+        _self.taxLoading = false
+      }
       _self.taxErrorFirst = _self.taxError.slice(0,5)
       _self.taxErrorShow = _self.taxErrorFirst
-
       _self.taxLoading = false
       _self.$apply()
+      // _self.save_tax_error(res)
     }
 
     function fail(err){
@@ -196,7 +228,32 @@ export default class Index extends wepy.page {
 
     POST(url, config, success, fail, complete, header)
   }
+  // save_bussiness_error(res){
+  //   let _self = this
+  //   let url = 'customer/company/searchuser/saveSearchResult'
+  //   let config = {
+  //     	enterprise: _self.companyName,
+  //       business_error: res.data.data
+  //   }
 
+  //   function success(res){
+
+  //   }
+
+  //   function fail(err) {
+
+  //   }
+
+  //   function complete(){
+
+  //   }
+
+  //   let header = {
+  //     'content-type' : 'application/x-www-form-urlencoded'
+  //   }
+
+  //   POST(url, config, success, fail, complete, header)
+  // }
   get_bussiness(e){
     let _self = this
     let url = `customer/company/exception/business`
@@ -207,13 +264,13 @@ export default class Index extends wepy.page {
 
       function formatDate(e){
         let tempDate = new Date(e)
-        // console.log(tempDate)
-        // console.log(tempDate.getFullYear())
-        // console.log(tempDate.getMonth())
-        // console.log(tempDate.getDate())
         return `${tempDate.getFullYear()} 年 ${tempDate.getMonth() + 1} 月 ${tempDate.getDate()} 日`
       }
-      _self.businessError = JSON.parse(res.data.data.replace(/<[^>]+>/g,"")).data.abnormalList
+      try {
+        _self.businessError = JSON.parse(res.data.data.replace(/<[^>]+>/g,"")).data.abnormalList
+      } catch (error) {
+        _self.businessLoading = false
+      }
       // console.log(_self.businessError)
       for(let i = 0; i<_self.businessError.length;i++){
         _self.businessError[i].abnormal_date = formatDate(_self.businessError[i].abnormal_date)
@@ -225,6 +282,7 @@ export default class Index extends wepy.page {
       _self.bussinessShow = _self.bussinessFirst
       _self.businessLoading = false
       _self.$apply()
+      // _self.save_bussiness_error(res)
     }
     function fail(err){
       _self.businessLoading = false
