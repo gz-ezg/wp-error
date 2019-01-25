@@ -1,17 +1,18 @@
 <style>
 page{
-  height:100%;
-  /* background-color: #e1474c; */
+  /* height:100%; */
+  background-color: #c23331;
 }
 .table-container{
-  background-color: white;
+  /* background-color: #faf3e9; */
   padding: 10rpx;
 }
 .table{
   font-size: 24rpx;
-  border:1px solid #dadada;
+  /* border:1px solid #dadada; */
   border-right: 0;
   border-bottom: 0;
+  border-left: 0;
   /* border-left: 0; */
   width: 98%;
 }
@@ -22,33 +23,33 @@ page{
 }
 .th,.td {
   padding: 10rpx;
-  border-bottom: 1px solid #dadada;
-  border-right: 1px solid #dadada;
+  /* border-bottom: 1px solid #dadada; */
+  /* border-right: 1px solid #dadada; */
   text-align: center;
   width:100%
 }
-.td1{
-  width:50%
-}
 /* .td1{
-  width:20%
+  width:50%
+} */
+.td2{
+  width:50%
 }
 .td3{
   width:40%
 }
 .td4{
   width:40%
-} */
+}
 .th {
   font-weight: 400;
-  background-color: #dadada;
+  /* background-color: #dadada; */
   font-size: 30rpx;
 }
 .go-back {
     margin: auto;
     margin-top: 30rpx;
-    width: 90%;
-    background: #ffffff;
+    width: 80%;
+    background: #faf3e9;
     color: #636363;
     box-shadow: 0px 6px 15px 0px rgba(255,121,84,0.1);
     font-size: 32rpx;
@@ -56,72 +57,132 @@ page{
     line-height: 98rpx;
     text-align: center;
     margin-bottom: 30rpx;
+    /* border: none; */
+}
+.bg-box{
+    position: fixed;
+    width : 100%;
+    height : 100%;
+    z-index: 0;
+    /* box-sizing: border-box; */
+    top: 0;
+}
+.title{
+  width:70%;
+  margin:auto;
+  font-size:30rpx;
+  display:flex;
+  justify-content:center;
+  margin-top:14rpx;
+  border-radius:40rpx;
+  background-color:#1a1a1a;
+  color:#fff;
+  padding-top:10rpx;
+  padding-bottom:10rpx;
+  font-weight:800;
+  margin-bottom:20rpx;
+  letter-spacing: 10rpx;
+}
+.companyname{
+  font-size:36rpx;
+  display:flex;
+  justify-content:center;
+  margin-top:14rpx;
+  padding-bottom:20rpx;
+  font-weight: 900;
+}
+.detail-footer{
+  display:flex;
+  justify-content:center;
+  padding:16rpx;
+  font-size: 24rpx;
+  letter-spacing: 4rpx;
+  color: #454444;
+}
+.none{
+  display:flex;
+  justify-content:center;
+  margin-top:14rpx;
+  font-size:28rpx;
+  color: #454444;
 }
 </style>
 
 <template>
-  <view style="width:95%;margin:auto;padding-bottom:30rpx;">
-    <view><text style="font-size:40rpx;display:flex;justify-content:center;margin-top:14rpx;padding-bottom:20rpx">{{companyName}}</text></view>
-    <view><text style="font-size:36rpx;display:flex;justify-content:center;margin-top:14rpx;padding-bottom:20rpx">税务异常信息</text></view>
-    <view class="table-container">
-      <view class="table">
-          <view class="tr" >
-              <view class="th td1">税所</view>
-              <view class="th td2">税种</view>
-              <view class="th td3">所属期始</view>
-              <view class="th td4">所属期止</view>
+    <view>
+      <view class="bg-box">
+        <image class="scan-img" src="./bg.png" mode="scaleToFill" style="width:100%;height:1350rpx"></image>
+      </view>
+      <scroll-view style="display:flex;margin-top:90rpx;height:1050rpx;" scroll-y>
+        <view style="width:75%;margin:auto;padding-bottom:30rpx;z-index:999;">
+          <view><text style="" class="companyname">* {{companyName}}</text></view>
+          <view><text class="title">税务异常信息</text></view>
+          <view class="table-container">
+            <view class="table">
+                <view class="tr" style="border-bottom: 1px dashed #000;border-top: 1px double #000">
+                    <!-- <view class="th td1">税所</view> -->
+                    <view class="th td2">税种</view>
+                    <view class="th td3">所属期始</view>
+                    <view class="th td4">所属期止</view>
+                </view>
+                <view style="margin-top:40rpx" wx:if="{{taxLoading}}">
+                  <van-loading style="margin:45%" />
+                  <view style="display:flex;justify-content:center;margin-top:14rpx;font-size: 24rpx;">正在查询中...</view>
+                </view>
+                <view wx:else="{{taxLoading}}">
+                  <view>
+                    <view wx:for="{{taxErrorShow}}" class="tr" wx:key="unique" >
+                      <!-- <view class="td td1">{{item.gdslx}}</view> -->
+                      <view class="td td2">{{item.zsxmmc}}</view>
+                      <view class="td td3">{{item.skssqq}}</view>
+                      <view class="td td4">{{item.skssqz}}</view>
+                    </view>
+                  </view>
+                  <view wx:if="{{taxError.length > 5 && !taxLoading && (taxErrorShow.length == taxErrorFirst.length)}}" class="detail-footer" @tap="open_tax_more">点击查看更多</view>
+                  <view wx:if="{{taxError.length > 5 && !taxLoading && (taxErrorShow.length == taxError.length)}}" class="detail-footer"  @tap="close_tax_more">点击关闭</view>
+                </view>
+            </view>
+            <view wx:if="{{taxError.length == 0 && !taxLoading}}" class="none">暂无异常</view>
           </view>
-          <view style="margin-top:40rpx" wx:if="{{taxLoading}}">
+          <view><text class="title">工商异常信息</text></view>
+          <view style="width:100%;border-bottom:1px dashed #000"></view>
+          <view style="margin-top:40rpx" wx:if="{{businessLoading}}">
             <van-loading style="margin:45%" />
             <view style="display:flex;justify-content:center;margin-top:14rpx;font-size: 24rpx;">正在查询中...</view>
           </view>
-          <view wx:else="{{taxLoading}}">
-            <view>
-              <view wx:for="{{taxErrorShow}}" class="tr" wx:key="unique" >
-                <view class="td td1">{{item.gdslx}}</view>
-                <view class="td td2">{{item.zsxmmc}}</view>
-                <view class="td td3">{{item.skssqq}}</view>
-                <view class="td td4">{{item.skssqz}}</view>
-              </view>
+          <van-cell-group wx:else>
+            <view wx:for="{{bussinessShow}}" wx:key="unique">
+              <van-cell
+                title="列入经营异常名录原因"
+                label="{{item.abnormal_cause}}"
+              />
+              <van-cell
+                title="决定机关"
+                value="{{item.office}}"
+              />
+              <van-cell
+                title="列入日期"
+                value="{{item.abnormal_date}}"
+              />
+              <van-cell
+                title="移出日期"
+                value="{{item.remove_date}}"
+              />
             </view>
-            <view wx:if="{{taxError.length > 5 && !taxLoading && (taxErrorShow.length == taxErrorFirst.length)}}" style="display:flex;justify-content:center;padding:16rpx" @tap="open_tax_more">点击查看更多</view>
-            <view wx:if="{{taxError.length > 5 && !taxLoading && (taxErrorShow.length == taxError.length)}}" style="display:flex;justify-content:center;padding:16rpx" @tap="close_tax_more">点击关闭</view>
+          </van-cell-group>
+          <view wx:if="{{businessError.length > 1 && !businessLoading && (bussinessShow.length == bussinessFirst.length)}}" class="detail-footer" @tap="open_bussiness_more">点击查看更多</view>
+          <view wx:if="{{businessError.length > 1 && !businessLoading && (bussinessShow.length == businessError.length)}}" class="detail-footer" @tap="close_bussiness_more">点击关闭</view>
+          <view wx:if="{{businessError.length == 0 && !businessLoading}}" class="none">暂无异常</view>
+          <van-toast id="van-toast" />
+          <!-- <view style="position:fixed;bottom:140rpx;width:100%;"> -->
+          <view style="margin-top:80rpx;">
+            <image src="./shengming2.png" mode="aspectFit" style="width:60%;height:80rpx;"></image>
           </view>
-      </view>
-      <view wx:if="{{taxError.length == 0 && !taxLoading}}" style="display:flex;justify-content:center;margin-top:14rpx;font-size:28rpx">暂无异常</view>
+          <!-- <view style="width:90%;font-size:28rpx;margin:auto;padding-top:40rpx">* <text style="color:red;font-size:28rpx">以上结果仅供参考</text>，最终结果以税务局及工商局公示为准！</view> -->
+          <button @tap="back" class="go-back">返回</button>
+        </view>
+      </scroll-view>
     </view>
-    <view><text style="font-size:36rpx;display:flex;justify-content:center;margin-top:14rpx;padding-bottom:20rpx">工商异常信息</text></view>
-    <view style="margin-top:40rpx" wx:if="{{businessLoading}}">
-      <van-loading style="margin:45%" />
-      <view style="display:flex;justify-content:center;margin-top:14rpx;font-size: 24rpx;">正在查询中...</view>
-    </view>
-    <van-cell-group wx:else>
-      <view wx:for="{{bussinessShow}}" wx:key="unique">
-        <van-cell
-          title="列入经营异常名录原因"
-          label="{{item.abnormal_cause}}"
-        />
-        <van-cell
-          title="决定机关"
-          value="{{item.office}}"
-        />
-        <van-cell
-          title="列入日期"
-          value="{{item.abnormal_date}}"
-        />
-        <van-cell
-          title="移出日期"
-          value="{{item.remove_date}}"
-        />
-      </view>
-    </van-cell-group>
-    <view wx:if="{{businessError.length > 1 && !businessLoading && (bussinessShow.length == bussinessFirst.length)}}" style="display:flex;justify-content:center;padding:16rpx;font-size: 24rpx;" @tap="open_bussiness_more">点击查看更多</view>
-    <view wx:if="{{businessError.length > 1 && !businessLoading && (bussinessShow.length == businessError.length)}}" style="display:flex;justify-content:center;padding:16rpx;font-size: 24rpx;" @tap="close_bussiness_more">点击关闭</view>
-    <view wx:if="{{businessError.length == 0 && !businessLoading}}" style="display:flex;justify-content:center;margin-top:14rpx;padding-top:24rpx;padding-bottom:24rpx;font-size:28rpx">暂无异常</view>
-    <van-toast id="van-toast" />
-    <view style="width:90%;font-size:28rpx;margin:auto;padding-top:40rpx">* <text style="color:red;font-size:28rpx">以上结果仅供参考</text>，最终结果以税务局及工商局公示为准！</view>
-    <button @tap="back" class="go-back">返回</button>
-  </view>
 </template>
 
 <script>
@@ -132,7 +193,7 @@ import { GET,POST } from '../utils/my_request.js'
 export default class Index extends wepy.page {
   config = {
       backgroundTextStyle: 'light',
-      navigationBarBackgroundColor: '#cf1e1e',
+      navigationBarBackgroundColor: '#c23331',
       navigationBarTitleText: '企业异常检测',
       navigationBarTextStyle: '#ffffff'
     }
@@ -328,5 +389,24 @@ export default class Index extends wepy.page {
       }
     })
   }
+  onShareAppMessage(e){
+      // console.log(e)
+//       let shareObj = {
+//         success: function(res){
+// 　　　　　　// 转发成功之后的回调
+// 　　　　　　if(res.errMsg == 'shareAppMessage:ok'){
+// 　　　　　　}
+// 　　　　},
+// 　　　　fail: function(){
+// 　　　　　　// 转发失败之后的回调
+// 　　　　　　if(res.errMsg == 'shareAppMessage:fail cancel'){
+// 　　　　　　　　// 用户取消转发
+// 　　　　　　}else if(res.errMsg == 'shareAppMessage:fail'){
+// 　　　　　　　　// 转发失败，其中 detail message 为详细失败信息
+// 　　　　　　}
+// 　　　　}
+    //   }
+    // return shareObj
+    }
 }
 </script>

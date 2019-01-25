@@ -4,13 +4,13 @@
   width: 100%;
   display: -webkit-flex;
   display: flex;
-  padding: 10px 15px;
+  padding: 10rpx 5rpx;
   box-sizing: border-box;
   line-height: 24px;
   position: relative;
-  background-color: #fff;
+  /* background-color: #faf3e9; */
   color: #333;
-  font-size: 14px
+  font-size: 28rpx
 }
 
 .van-cell::after {
@@ -26,7 +26,7 @@
   bottom: 0;
   -webkit-transform: scaleY(.5);
   transform: scaleY(.5);
-  border-bottom: 1px solid #eee
+  /* border-bottom: 1px solid #eee */
 }
 
 .van-cell--borderless::after {
@@ -49,7 +49,8 @@
 }
 .van-cell__value {
   -webkit-flex: 2;
-  flex: 2
+  flex: 2;
+  font-size: 24rpx;
 }
 
 .van-cell__title:empty,
